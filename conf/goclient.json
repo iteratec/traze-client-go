@@ -1,0 +1,4 @@
+{
+  "defaultTopic": "test",
+  "broker": "tcp://localhost:1883"
+}
