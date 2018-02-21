@@ -11,7 +11,7 @@ var store string
 var qos int
 
 const(
-	id = "goclient"
+	id = "GO_TRAZE_CLIENT"
 )
 
 func GetBroker() string{
@@ -44,6 +44,7 @@ func getMqttOptions() *MQTT.ClientOptions {
 	opts := MQTT.NewClientOptions()
 	opts.AddBroker(broker)
 	opts.SetClientID(id)
+	opts.SetKeepAlive(5)
 	//opts.SetUsername(*user)
 	//opts.SetPassword(*password)
 	opts.SetCleanSession(false)
