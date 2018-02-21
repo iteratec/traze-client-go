@@ -14,6 +14,7 @@ func ReadFromTopic(topic string) {
 
 	msgQueue := make(chan [2]string)
 
+	fmt.Printf("Subscribe on topic: %v\n", topic)
 	client.Subscribe(topic, byte(GetQos()), func(i MQTT.Client, msg MQTT.Message) {
 		msgQueue <- [2]string{msg.Topic(), string(msg.Payload())}
 	})

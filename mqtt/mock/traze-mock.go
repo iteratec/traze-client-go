@@ -22,7 +22,6 @@ func Run() {
 	}
 	fmt.Println("Mock Publisher Started.")
 	for {
-		fmt.Println("---- doing publish ----")
 		grid := mqtt.Grid{
 			Height: 3,
 			Width:  3,
@@ -33,8 +32,7 @@ func Run() {
 			},
 		}
 		var jsonGrid, _ = json.Marshal(grid)
-		fmt.Printf("to publish on topic '%v': %v\n", MOCK_TOPIC, grid)
-
+		fmt.Printf("Publishing on topic '%v' now: %v\n", MOCK_TOPIC, grid)
 		token := client.Publish(MOCK_TOPIC, byte(mqtt.GetQos()), false, string(jsonGrid))
 		token.Wait()
 
