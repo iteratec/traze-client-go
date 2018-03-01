@@ -22,3 +22,5 @@
 
 # binary
 goclient
+# logfile
+goclient.log
