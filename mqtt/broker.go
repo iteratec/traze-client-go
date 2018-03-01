@@ -2,30 +2,25 @@ package mqtt
 
 import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
-	"fmt"
+	"github.com/spf13/viper"
+	"iteragit.iteratec.de/traze/goclient/util/log"
 )
 
 var broker string
 var client MQTT.Client
 var store string
-var qos int
+var qos byte
 
-const(
+const (
 	id = "GO_TRAZE_CLIENT"
 )
 
-func GetBroker() string{
-	return broker
-}
-func GetQos() int{
+func Qos() byte {
 	return qos
 }
 
-func init(){
-
-	//broker = viper.GetString("broker")
-	broker = "tcp://localhost:1883"
-	fmt.Printf("broker=%v\n", broker)
+func InitClient() {
+	broker = viper.GetString("broker")
 	//password := flag.String("password", "", "The password (optional)")
 	//user := flag.String("user", "", "The User (optional)")
 	//id := flag.String("id", "testgoid", "The ClientID (optional)")
@@ -33,7 +28,6 @@ func init(){
 	store = ":memory:"
 
 	client = MQTT.NewClient(getMqttOptions())
-
 }
 
 func GetClient() MQTT.Client {
@@ -51,6 +45,6 @@ func getMqttOptions() *MQTT.ClientOptions {
 	if store != ":memory:" {
 		opts.SetStore(MQTT.NewFileStore(store))
 	}
-	fmt.Printf("Initialize mqtt client with: broker=%v\n", broker)
+	log.Info.Printf("Initialize mqtt client with: broker=%v\n", broker)
 	return opts
 }
