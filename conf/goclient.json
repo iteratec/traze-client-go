@@ -1,4 +1,6 @@
 {
-  "defaultTopic": "test",
-  "broker": "tcp://localhost:1883"
+  "broker": "tcp://localhost:1883",
+  "topics": {
+    "games": "traze/games"
+  }
 }
