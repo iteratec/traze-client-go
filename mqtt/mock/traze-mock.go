@@ -1,17 +1,11 @@
 package mock
 
 import (
-	"fmt"
 	"iteragit.iteratec.de/traze/goclient/mqtt"
 	"time"
 	"encoding/json"
+	"iteragit.iteratec.de/traze/goclient/util/log"
 )
-
-var MOCK_TOPIC string
-
-func init() {
-	MOCK_TOPIC = "traze/mockedgame/grid"
-}
 
 func Run() {
 
@@ -20,26 +14,96 @@ func Run() {
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
 		panic(token.Error())
 	}
-	fmt.Println("Mock Publisher Started.")
 	for {
-		grid := mqtt.Grid{
-			Height: 3,
-			Width:  3,
-			Tiles: [][]int{
-				{0, 1, 0},
-				{0, 2, 0},
-				{0, 2, 0},
-			},
-		}
-		var jsonGrid, _ = json.Marshal(grid)
-		fmt.Printf("Publishing on topic '%v' now: %v\n", MOCK_TOPIC, grid)
-		token := client.Publish(MOCK_TOPIC, byte(mqtt.GetQos()), false, string(jsonGrid))
-		token.Wait()
 
-		time.Sleep(500 * time.Millisecond)
+		client.Publish("traze/mockedgame/grid", mqtt.Qos(), false, getGrid())
+		client.Publish("traze/games", mqtt.Qos(), false, getGames())
+
+		time.Sleep(1000 * time.Millisecond)
+
 	}
 
 	client.Disconnect(250)
-	fmt.Println("Sample Publisher Disconnected")
+	log.Info.Print("Sample Publisher Disconnected")
 
+}
+
+func GetGrid() mqtt.Grid {
+	return mqtt.Grid{
+		Height: 20,
+		Width:  30,
+		Tiles: [][]int{
+			{0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0},
+			{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0},
+			{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0},
+			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0},
+			{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0},
+			{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0},
+			{0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 3, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0},
+			{0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0},
+			{0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0},
+			{0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0},
+			{0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 3, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0},
+			{0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 4, 0},
+			{0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 4, 0},
+			{0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 4, 0},
+			{0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 4, 0},
+			{0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0},
+			{0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0},
+			{0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		},
+		Bikes: []mqtt.Bike{
+			mqtt.Bike{
+				PlayerId:        1,
+				CurrentLocation: [2]int{1, 0},
+				Direction:       "E",
+				Trail:           [][2]int{{9, 0}, {8, 0}},
+			},
+			mqtt.Bike{
+				PlayerId:        2,
+				CurrentLocation: [2]int{1, 0},
+				Direction:       "E",
+				Trail:           [][2]int{{9, 0}, {8, 0}},
+			},
+			mqtt.Bike{
+				PlayerId:        3,
+				CurrentLocation: [2]int{1, 0},
+				Direction:       "E",
+				Trail:           [][2]int{{9, 0}, {8, 0}},
+			},
+			mqtt.Bike{
+				PlayerId:        4,
+				CurrentLocation: [2]int{1, 0},
+				Direction:       "E",
+				Trail:           [][2]int{{9, 0}, {8, 0}},
+			},
+		},
+	}
+}
+
+func getGrid() string {
+	grid := GetGrid()
+	var jsonGrid, _ = json.Marshal(grid)
+	return string(jsonGrid)
+}
+
+func getGames() string {
+	games := []mqtt.Game{
+		mqtt.Game{
+			Name:          "1",
+			ActivePlayers: 3,
+		},
+		mqtt.Game{
+			Name:          "2",
+			ActivePlayers: 2,
+		},
+		mqtt.Game{
+			Name:          "3",
+			ActivePlayers: 5,
+		},
+	}
+	var jsonGames, _ = json.Marshal(games)
+	return string(jsonGames)
 }
