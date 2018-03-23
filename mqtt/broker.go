@@ -21,6 +21,7 @@ func Qos() byte {
 
 func InitClient() {
 	broker = viper.GetString("broker")
+	log.Info.Printf("broker to connect to=%v\n", broker)
 	//password := flag.String("password", "", "The password (optional)")
 	//user := flag.String("user", "", "The User (optional)")
 	//id := flag.String("id", "testgoid", "The ClientID (optional)")

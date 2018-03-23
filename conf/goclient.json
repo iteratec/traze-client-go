@@ -1,5 +1,5 @@
 {
-  "broker": "tcp://localhost:1883",
+  "broker": "tcp://88.198.110.136:1883",
   "topics": {
     "games": "traze/games"
   }

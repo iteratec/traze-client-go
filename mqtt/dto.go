@@ -17,4 +17,11 @@ type (
 		Tiles  [][]int `json:"tiles"`
 		Bikes  []Bike  `json:"bikes"`
 	}
+	Player struct {
+		id              int    `json:"id"`
+		name            string `json:"name"`
+		owned           int    `json:"owned"`
+		color           string `json:"color"`
+		frags           int    `json:"frags"`
+	}
 )

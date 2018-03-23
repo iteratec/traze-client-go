@@ -5,25 +5,41 @@ import (
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"iteragit.iteratec.de/traze/goclient/util/log"
+	"github.com/spf13/viper"
 )
 
-var gridQueue chan Grid
-var topicsToSubscribe map[string]byte
+var (
+	gamesTopicName string
 
-func init() {
+	gridQueue         chan Grid
+	gamesQueue        chan []Game
+
+	topicsToSubscribe map[string]byte
+)
+
+func initTopics() {
+
+	gamesTopicName = viper.GetString("topics.games")
+	log.Info.Printf("all conf keys: %v\n", viper.AllKeys())
+
 	gridQueue = make(chan Grid)
 	topicsToSubscribe = map[string]byte{
-		"traze/mockedgame/grid": Qos(),
-		"traze/games":           Qos(),
+		"traze/1/grid": Qos(),
+		gamesTopicName:  Qos(),
 	}
+	gamesQueue = make(chan []Game)
 }
 
 func HandleTrazeEvents() {
+
+	initTopics()
 
 	client := GetClient()
 	defer client.Disconnect(250)
 
 	msgQueue := make(chan [2]string)
+
+	log.Info.Printf("subscribe to following topics: %v\n", topicsToSubscribe)
 
 	client.SubscribeMultiple(topicsToSubscribe, func(i MQTT.Client, msg MQTT.Message) {
 		msgQueue <- [2]string{msg.Topic(), string(msg.Payload())}
@@ -42,18 +58,31 @@ func HandleTrazeEvents() {
 	for {
 		incoming := <-msgQueue
 		log.Info.Printf("TOPIC '%s' -> received MESSAGE: %s\n", incoming[0], incoming[1])
-		if incoming[0] == "traze/mockedgame/grid" {
+		switch incoming[0] {
+		case gamesTopicName:
+			games := []Game{}
+			unmarshallJson(incoming[1], &games)
+			log.Info.Printf("unmarshalled games: %v\n", games)
+			gamesQueue <- games
+		case "traze/1/grid":
 			grid := Grid{}
-			err := json.Unmarshal([]byte(incoming[1]), &grid)
-			if err != nil {
-				log.Error.Printf("The following error occurred unmarshalling grid json: %v\n", err)
-			}
+			unmarshallJson(incoming[1], &grid)
 			gridQueue <- grid
 		}
 	}
 
 }
 
+func unmarshallJson(fromMqtt string, target interface{}) {
+	err := json.Unmarshal([]byte(fromMqtt), &target)
+	if err != nil {
+		log.Error.Printf("An error occurred unmarshalling json from mqtt topic:\n\tjson=%v\n\terr=%v\n", fromMqtt, err)
+	}
+}
+
 func GridQueue() chan Grid {
 	return gridQueue
+}
+func GamesQueue() chan []Game{
+	return gamesQueue
 }
